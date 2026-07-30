@@ -30,6 +30,9 @@ Rails.application.routes.draw do
           patch :reject
         end
       end
+
+      # Friends
+      resources :friends, only: %i[index destroy], controller: "friendships"
     end
   end
 
