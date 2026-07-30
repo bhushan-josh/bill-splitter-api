@@ -21,7 +21,7 @@ gem "tzinfo-data", platforms: %i[windows jruby]
 
 # --- Background processing -------------------------------------------------
 # Sidekiq background job processor (backed by Redis)
-gem "sidekiq", "~> 7.3"
+gem "sidekiq", "~> 8.0"
 # Redis client (shared cache / Sidekiq backend)
 gem "redis", "~> 5.3"
 
