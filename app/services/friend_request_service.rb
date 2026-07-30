@@ -25,9 +25,17 @@ class FriendRequestService
     FriendRequest.create!(sender: sender, receiver: receiver, status: "pending")
   end
 
-  # Receiver accepts a pending request.
+  # Receiver accepts a pending request. Accepting and creating the mutual
+  # friendship happen in a single transaction so they succeed or fail together.
   def accept!(friend_request)
-    transition!(friend_request, "accepted")
+    guard_pending!(friend_request, "accepted")
+
+    ApplicationRecord.transaction do
+      friend_request.update!(status: "accepted")
+      FriendshipService.new.befriend(friend_request.sender, friend_request.receiver)
+    end
+
+    friend_request
   end
 
   # Receiver rejects a pending request.
@@ -43,12 +51,15 @@ class FriendRequestService
   private
 
   def transition!(friend_request, new_status)
-    unless friend_request.pending?
-      raise InvalidTransition,
-            "This request is already #{friend_request.status} and can no longer be #{new_status}"
-    end
-
+    guard_pending!(friend_request, new_status)
     friend_request.update!(status: new_status)
     friend_request
+  end
+
+  def guard_pending!(friend_request, new_status)
+    return if friend_request.pending?
+
+    raise InvalidTransition,
+          "This request is already #{friend_request.status} and can no longer be #{new_status}"
   end
 end

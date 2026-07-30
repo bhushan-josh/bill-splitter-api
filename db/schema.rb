@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_30_174035) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_30_175144) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -23,6 +23,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_30_174035) do
     t.index ["receiver_id"], name: "index_friend_requests_on_receiver_id"
     t.index ["sender_id", "receiver_id"], name: "index_friend_requests_pending_pair", unique: true, where: "((status)::text = 'pending'::text)"
     t.index ["sender_id"], name: "index_friend_requests_on_sender_id"
+  end
+
+  create_table "friendships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "friend_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["friend_id"], name: "index_friendships_on_friend_id"
+    t.index ["user_id", "friend_id"], name: "index_friendships_on_user_id_and_friend_id", unique: true
+    t.index ["user_id"], name: "index_friendships_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -40,4 +50,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_30_174035) do
 
   add_foreign_key "friend_requests", "users", column: "receiver_id"
   add_foreign_key "friend_requests", "users", column: "sender_id"
+  add_foreign_key "friendships", "users"
+  add_foreign_key "friendships", "users", column: "friend_id"
 end
