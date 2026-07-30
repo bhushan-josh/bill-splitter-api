@@ -36,7 +36,7 @@ gem "pundit", "~> 2.4"
 gem "pagy", "~> 9.3"
 
 # Cross-Origin Resource Sharing
-gem "rack-cors", "~> 2.0"
+gem "rack-cors", "~> 3.0"
 
 # Load environment variables from .env files
 gem "dotenv-rails", "~> 3.1"
