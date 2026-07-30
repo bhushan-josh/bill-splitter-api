@@ -6,6 +6,17 @@ class User < ApplicationRecord
   # create automatically.
   has_secure_password
 
+  has_many :sent_friend_requests,
+           class_name: "FriendRequest",
+           foreign_key: :sender_id,
+           inverse_of: :sender,
+           dependent: :destroy
+  has_many :received_friend_requests,
+           class_name: "FriendRequest",
+           foreign_key: :receiver_id,
+           inverse_of: :receiver,
+           dependent: :destroy
+
   PHONE_FORMAT = /\A\+?[0-9]{7,15}\z/
   USERNAME_FORMAT = /\A[a-zA-Z0-9_]{3,30}\z/
   USERNAME_MESSAGE = "may only contain letters, numbers and underscores (3-30 chars)"
@@ -24,6 +35,12 @@ class User < ApplicationRecord
 
   normalizes :username, with: ->(value) { value.to_s.strip.downcase }
   normalizes :phone, with: ->(value) { value.to_s.strip }
+
+  # Case-insensitive partial match on username or phone.
+  scope :search, lambda { |query|
+    term = "%#{sanitize_sql_like(query.to_s.strip)}%"
+    where("username ILIKE :t OR phone ILIKE :t", t: term)
+  }
 
   # Look up a user by either their username or phone (used at login).
   #

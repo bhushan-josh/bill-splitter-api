@@ -47,7 +47,7 @@ module JsonResponders
   def pagy_metadata(pagy)
     {
       page: pagy.page,
-      items: pagy.vars[:items],
+      limit: pagy.limit,
       count: pagy.count,
       pages: pagy.pages,
       next: pagy.next,

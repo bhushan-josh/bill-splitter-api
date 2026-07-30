@@ -23,7 +23,10 @@ module ErrorHandler
   private
 
   def handle_not_found(exception)
-    render_error(exception.message, status: :not_found, code: "not_found")
+    # Use the model name but never leak the underlying SQL from the default
+    # RecordNotFound message.
+    resource = exception.try(:model) || "Resource"
+    render_error("#{resource} not found", status: :not_found, code: "not_found")
   end
 
   def handle_record_invalid(exception)

@@ -19,6 +19,17 @@ Rails.application.routes.draw do
       post "signup", to: "auth#signup"
       post "login", to: "auth#login"
       get "me", to: "me#show"
+
+      # User search
+      get "users/search", to: "users#search"
+
+      # Friend requests
+      resources :friend_requests, only: %i[create destroy] do
+        member do
+          patch :accept
+          patch :reject
+        end
+      end
     end
   end
 
