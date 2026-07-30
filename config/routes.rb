@@ -33,6 +33,16 @@ Rails.application.routes.draw do
 
       # Friends
       resources :friends, only: %i[index destroy], controller: "friendships"
+
+      # Groups
+      resources :groups do
+        member do
+          post :leave
+          post :transfer_owner
+          post "members", action: :add_member
+          delete "members/:user_id", action: :remove_member, as: :member
+        end
+      end
     end
   end
 
