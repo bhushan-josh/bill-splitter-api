@@ -34,6 +34,9 @@ Rails.application.routes.draw do
       # Friends
       resources :friends, only: %i[index destroy], controller: "friendships"
 
+      # Expenses
+      resources :expenses, only: %i[create show update destroy]
+
       # Groups
       resources :groups do
         member do
