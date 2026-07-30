@@ -33,7 +33,7 @@ gem "bcrypt", "~> 3.1.7"
 # Authorization policies
 gem "pundit", "~> 2.4"
 # Pagination
-gem "pagy", "~> 9.3"
+gem "pagy", "~> 43.4"
 
 # Cross-Origin Resource Sharing
 gem "rack-cors", "~> 2.0"
