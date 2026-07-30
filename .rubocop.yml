@@ -1,0 +1,56 @@
+require:
+  - rubocop-rails
+  - rubocop-performance
+  - rubocop-rspec
+
+AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "bin/**/*"
+    - "db/schema.rb"
+    - "db/migrate/**/*"
+    - "config/**/*"
+    - "vendor/**/*"
+    - "tmp/**/*"
+    - "storage/**/*"
+    - "node_modules/**/*"
+
+# --- Style -----------------------------------------------------------------
+Style/Documentation:
+  Enabled: false
+
+# Match modern Rails (omakase) conventions used by the generators.
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+
+# --- Metrics ---------------------------------------------------------------
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+    - "config/routes.rb"
+
+Metrics/MethodLength:
+  Max: 20
+
+Layout/LineLength:
+  Max: 120
+
+# --- RSpec -----------------------------------------------------------------
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Max: 5
+
+# --- Rails -----------------------------------------------------------------
+Rails:
+  Enabled: true

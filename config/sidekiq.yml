@@ -1,0 +1,13 @@
+# Sidekiq process configuration. Loaded automatically by `bundle exec sidekiq`.
+# See: https://github.com/sidekiq/sidekiq/wiki/Advanced-Options
+---
+:concurrency: <%= ENV.fetch("SIDEKIQ_CONCURRENCY", 5) %>
+:timeout: 25
+:queues:
+  - critical
+  - default
+  - mailers
+  - low
+
+production:
+  :concurrency: <%= ENV.fetch("SIDEKIQ_CONCURRENCY", 10) %>

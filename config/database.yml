@@ -1,0 +1,30 @@
+# PostgreSQL configuration.
+#
+# Connection details are driven by environment variables (loaded from .env in
+# development/test via dotenv-rails) so that no credentials live in source.
+#
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+  host: <%= ENV.fetch("DATABASE_HOST", "localhost") %>
+  port: <%= ENV.fetch("DATABASE_PORT", 5432) %>
+  username: <%= ENV.fetch("DATABASE_USERNAME", ENV["USER"]) %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD", "") %>
+
+development:
+  <<: *default
+  database: <%= ENV.fetch("DATABASE_NAME", "billsplitter_development") %>
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  <<: *default
+  database: <%= ENV.fetch("TEST_DATABASE_NAME", "billsplitter_test") %>
+
+production:
+  <<: *default
+  # In production, prefer a single DATABASE_URL. These values act as fallbacks.
+  url: <%= ENV["DATABASE_URL"] %>
+  database: <%= ENV.fetch("DATABASE_NAME", "billsplitter_production") %>
