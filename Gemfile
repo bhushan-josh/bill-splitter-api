@@ -27,7 +27,7 @@ gem "redis", "~> 5.3"
 
 # --- API & auth ------------------------------------------------------------
 # JSON Web Token encoding/decoding (authentication implemented later)
-gem "jwt", "~> 2.9"
+gem "jwt", "~> 3.2"
 # Password hashing for has_secure_password (models added later)
 gem "bcrypt", "~> 3.1.7"
 # Authorization policies
