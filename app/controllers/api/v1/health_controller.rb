@@ -6,6 +6,8 @@ module Api
     # and its critical backing services (PostgreSQL and Redis) so load
     # balancers and uptime monitors can verify the API is healthy.
     class HealthController < BaseController
+      skip_before_action :authenticate_user!
+
       def show
         render_success(
           {
