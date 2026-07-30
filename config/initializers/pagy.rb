@@ -3,9 +3,9 @@
 # Pagy pagination defaults. See https://ddnexus.github.io/pagy/
 require "pagy"
 
-# Default number of items per page (overridable per-request via ?items=).
-Pagy::DEFAULT[:items] = 25
-Pagy::DEFAULT[:max_items] = 100
+# Default page size (overridable per-request via ?limit=).
+Pagy::DEFAULT[:limit] = 25
+Pagy::DEFAULT[:max_limit] = 100
 
-# Return pagination info even when the collection fits on a single page.
+# Clamp out-of-range pages to the last page instead of raising.
 Pagy::DEFAULT[:overflow] = :last_page
