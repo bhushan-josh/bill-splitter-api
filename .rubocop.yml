@@ -38,8 +38,18 @@ Metrics/BlockLength:
     - "spec/**/*"
     - "config/routes.rb"
 
+# Serializers/presenters are declarative attribute mappings; ABC/length limits
+# are noise there.
+Metrics/AbcSize:
+  Exclude:
+    - "app/serializers/**/*"
+    - "app/presenters/**/*"
+
 Metrics/MethodLength:
   Max: 20
+  Exclude:
+    - "app/serializers/**/*"
+    - "app/presenters/**/*"
 
 Layout/LineLength:
   Max: 120
@@ -54,3 +64,7 @@ RSpec/MultipleExpectations:
 # --- Rails -----------------------------------------------------------------
 Rails:
   Enabled: true
+
+# Inline validation messages are fine; revisit if/when i18n is introduced.
+Rails/I18nLocaleTexts:
+  Enabled: false
