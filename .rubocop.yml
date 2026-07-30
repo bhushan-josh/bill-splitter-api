@@ -51,6 +51,10 @@ Metrics/MethodLength:
     - "app/serializers/**/*"
     - "app/presenters/**/*"
 
+# Service objects legitimately orchestrate several operations in one class.
+Metrics/ClassLength:
+  Max: 150
+
 Layout/LineLength:
   Max: 120
 
@@ -60,6 +64,10 @@ RSpec/ExampleLength:
 
 RSpec/MultipleExpectations:
   Max: 5
+
+# Allow descriptive context names beyond when/with/without.
+RSpec/ContextWording:
+  Enabled: false
 
 # --- Rails -----------------------------------------------------------------
 Rails:

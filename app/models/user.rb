@@ -33,6 +33,12 @@ class User < ApplicationRecord
            through: :group_memberships,
            source: :group
 
+  has_many :paid_expenses, class_name: "Expense", foreign_key: :paid_by_id, inverse_of: :paid_by,
+                           dependent: :restrict_with_exception
+  has_many :created_expenses, class_name: "Expense", foreign_key: :created_by_id, inverse_of: :created_by,
+                              dependent: :restrict_with_exception
+  has_many :expense_splits, inverse_of: :user, dependent: :destroy
+
   PHONE_FORMAT = /\A\+?[0-9]{7,15}\z/
   USERNAME_FORMAT = /\A[a-zA-Z0-9_]{3,30}\z/
   USERNAME_MESSAGE = "may only contain letters, numbers and underscores (3-30 chars)"

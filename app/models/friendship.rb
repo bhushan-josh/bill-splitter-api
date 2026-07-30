@@ -6,6 +6,8 @@ class Friendship < ApplicationRecord
   belongs_to :user, class_name: "User", inverse_of: :friendships
   belongs_to :friend, class_name: "User", inverse_of: :inverse_friendships
 
+  has_many :expenses, as: :expenseable, dependent: :destroy
+
   validates :user_id, uniqueness: { scope: :friend_id }
   validate :not_self_friendship
 
