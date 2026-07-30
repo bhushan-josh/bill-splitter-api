@@ -17,6 +17,14 @@ class User < ApplicationRecord
            inverse_of: :receiver,
            dependent: :destroy
 
+  has_many :friendships, inverse_of: :user, dependent: :destroy
+  has_many :inverse_friendships,
+           class_name: "Friendship",
+           foreign_key: :friend_id,
+           inverse_of: :friend,
+           dependent: :destroy
+  has_many :friends, through: :friendships, source: :friend
+
   PHONE_FORMAT = /\A\+?[0-9]{7,15}\z/
   USERNAME_FORMAT = /\A[a-zA-Z0-9_]{3,30}\z/
   USERNAME_MESSAGE = "may only contain letters, numbers and underscores (3-30 chars)"
