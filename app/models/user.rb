@@ -25,6 +25,14 @@ class User < ApplicationRecord
            dependent: :destroy
   has_many :friends, through: :friendships, source: :friend
 
+  has_many :owned_groups, class_name: "Group", foreign_key: :owner_id, inverse_of: :owner, dependent: :destroy
+  has_many :group_memberships, class_name: "GroupMember", inverse_of: :user, dependent: :destroy
+  # Groups the user is currently an active member of (left_at IS NULL).
+  has_many :groups,
+           -> { where(group_members: { left_at: nil }) },
+           through: :group_memberships,
+           source: :group
+
   PHONE_FORMAT = /\A\+?[0-9]{7,15}\z/
   USERNAME_FORMAT = /\A[a-zA-Z0-9_]{3,30}\z/
   USERNAME_MESSAGE = "may only contain letters, numbers and underscores (3-30 chars)"
