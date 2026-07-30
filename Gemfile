@@ -46,7 +46,7 @@ group :development, :test do
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
 
   # RSpec test framework
-  gem "rspec-rails", "~> 7.1"
+  gem "rspec-rails", "~> 8.0"
   # Factory-based test fixtures
   gem "factory_bot_rails", "~> 6.4"
   # Fake data generation for specs/factories
