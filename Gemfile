@@ -64,7 +64,7 @@ end
 
 group :test do
   # One-liner matchers for common Rails functionality
-  gem "shoulda-matchers", "~> 6.4"
+  gem "shoulda-matchers", "~> 7.0"
   # Clean the database between test runs
   gem "database_cleaner-active_record", "~> 2.2"
 end
