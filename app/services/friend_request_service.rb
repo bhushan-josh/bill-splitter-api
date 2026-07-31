@@ -22,7 +22,9 @@ class FriendRequestService
   # @return [FriendRequest] the persisted, pending request
   # @raise [ActiveRecord::RecordInvalid]
   def create(sender:, receiver:)
-    FriendRequest.create!(sender: sender, receiver: receiver, status: "pending")
+    FriendRequest.create!(sender: sender, receiver: receiver, status: "pending").tap do |friend_request|
+      NotificationService.new.friend_request_received(friend_request)
+    end
   end
 
   # Receiver accepts a pending request. Accepting and creating the mutual

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_31_090000) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_31_093000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -98,6 +98,20 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_31_090000) do
     t.index ["sender_id"], name: "index_messages_on_sender_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title", null: false
+    t.text "body"
+    t.string "notification_type", null: false
+    t.jsonb "data", default: {}, null: false
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "created_at"], name: "index_notifications_on_user_id_and_created_at"
+    t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "settlements", force: :cascade do |t|
     t.string "settleable_type", null: false
     t.bigint "settleable_id", null: false
@@ -139,6 +153,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_31_090000) do
   add_foreign_key "group_members", "users"
   add_foreign_key "groups", "users", column: "owner_id"
   add_foreign_key "messages", "users", column: "sender_id"
+  add_foreign_key "notifications", "users"
   add_foreign_key "settlements", "users", column: "created_by_id"
   add_foreign_key "settlements", "users", column: "from_user_id"
   add_foreign_key "settlements", "users", column: "to_user_id"

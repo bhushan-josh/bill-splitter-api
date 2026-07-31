@@ -43,6 +43,13 @@ Rails.application.routes.draw do
       # Chat messages (friend or group; text only)
       resources :messages, only: %i[index create]
 
+      # Notifications
+      resources :notifications, only: :index do
+        member do
+          patch :read
+        end
+      end
+
       # Balances (derived on demand; nothing is stored)
       get "balances/friends", to: "balances#friends"
       get "balances/groups", to: "balances#groups"

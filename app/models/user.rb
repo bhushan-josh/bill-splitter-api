@@ -48,6 +48,9 @@ class User < ApplicationRecord
   # Chat messages the user has sent (friend or group chats).
   has_many :messages, foreign_key: :sender_id, inverse_of: :sender, dependent: :destroy
 
+  # In-app notifications delivered to this user.
+  has_many :notifications, dependent: :destroy
+
   PHONE_FORMAT = /\A\+?[0-9]{7,15}\z/
   USERNAME_FORMAT = /\A[a-zA-Z0-9_]{3,30}\z/
   USERNAME_MESSAGE = "may only contain letters, numbers and underscores (3-30 chars)"
