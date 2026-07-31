@@ -22,7 +22,7 @@ class SettlementService
     settleable = resolve_context!(creator, params)
     from_user, to_user = resolve_parties!(settleable, params[:from_user_id], params[:to_user_id])
 
-    Settlement.create!(
+    settlement = Settlement.create!(
       settleable: settleable,
       created_by: creator,
       from_user: from_user,
@@ -30,6 +30,8 @@ class SettlementService
       amount: to_amount(params[:amount]),
       note: params[:note]
     )
+    NotificationService.new.settlement_created(settlement)
+    settlement
   rescue ActiveRecord::RecordInvalid => e
     raise InvalidSettlement, e.record.errors.full_messages.to_sentence
   end

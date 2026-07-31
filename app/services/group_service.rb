@@ -43,6 +43,7 @@ class GroupService
 
     membership.left_at = nil
     membership.save!
+    NotificationService.new.added_to_group(membership)
     membership
   end
 
