@@ -29,6 +29,7 @@ class ExpenseService
     end
 
     NotificationService.new.expense_created(expense)
+    ActivityService.new.expense_created(expense, actor: creator)
     expense
   end
 
@@ -45,12 +46,17 @@ class ExpenseService
       expense
     end
 
+    ActivityService.new.expense_updated(expense, actor: actor)
     expense
   end
 
   def destroy(expense:, actor:)
     authorize_creator!(expense, actor)
-    expense.destroy!
+
+    ApplicationRecord.transaction do
+      ActivityService.new.expense_deleted(expense, actor: actor)
+      expense.destroy!
+    end
   end
 
   # Read authorization: who may view an expense.
