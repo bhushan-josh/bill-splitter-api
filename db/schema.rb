@@ -10,39 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_30_182746) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_31_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "expense_splits", force: :cascade do |t|
-    t.bigint "expense_id", null: false
-    t.bigint "user_id", null: false
-    t.decimal "amount", precision: 12, scale: 2, null: false
-    t.decimal "percentage", precision: 5, scale: 2
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["expense_id", "user_id"], name: "index_expense_splits_on_expense_id_and_user_id", unique: true
-    t.index ["expense_id"], name: "index_expense_splits_on_expense_id"
-    t.index ["user_id"], name: "index_expense_splits_on_user_id"
-  end
-
-  create_table "expenses", force: :cascade do |t|
-    t.string "expenseable_type", null: false
-    t.bigint "expenseable_id", null: false
-    t.bigint "paid_by_id", null: false
-    t.bigint "created_by_id", null: false
-    t.string "title", null: false
-    t.text "description"
-    t.decimal "amount", precision: 12, scale: 2, null: false
-    t.string "currency", default: "USD", null: false
-    t.string "split_type", null: false
-    t.date "expense_date", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["created_by_id"], name: "index_expenses_on_created_by_id"
-    t.index ["expenseable_type", "expenseable_id"], name: "index_expenses_on_expenseable"
-    t.index ["paid_by_id"], name: "index_expenses_on_paid_by_id"
-  end
 
   create_table "expense_splits", force: :cascade do |t|
     t.bigint "expense_id", null: false
@@ -116,6 +86,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_30_182746) do
     t.index ["owner_id"], name: "index_groups_on_owner_id"
   end
 
+  create_table "messages", force: :cascade do |t|
+    t.string "messageable_type", null: false
+    t.bigint "messageable_id", null: false
+    t.bigint "sender_id", null: false
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["messageable_type", "messageable_id", "created_at"], name: "index_messages_on_messageable_and_created_at"
+    t.index ["messageable_type", "messageable_id"], name: "index_messages_on_messageable"
+    t.index ["sender_id"], name: "index_messages_on_sender_id"
+  end
+
   create_table "settlements", force: :cascade do |t|
     t.string "settleable_type", null: false
     t.bigint "settleable_id", null: false
@@ -156,6 +138,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_30_182746) do
   add_foreign_key "group_members", "groups"
   add_foreign_key "group_members", "users"
   add_foreign_key "groups", "users", column: "owner_id"
+  add_foreign_key "messages", "users", column: "sender_id"
   add_foreign_key "settlements", "users", column: "created_by_id"
   add_foreign_key "settlements", "users", column: "from_user_id"
   add_foreign_key "settlements", "users", column: "to_user_id"

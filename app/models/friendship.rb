@@ -7,6 +7,7 @@ class Friendship < ApplicationRecord
   belongs_to :friend, class_name: "User", inverse_of: :inverse_friendships
 
   has_many :settlements, as: :settleable, dependent: :destroy
+  has_many :messages, as: :messageable, dependent: :destroy
 
   validates :user_id, uniqueness: { scope: :friend_id }
   validate :not_self_friendship

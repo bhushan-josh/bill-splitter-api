@@ -40,6 +40,9 @@ Rails.application.routes.draw do
       # Settlements (payments that pay down debt; change balances immediately)
       resources :settlements, only: %i[create update destroy]
 
+      # Chat messages (friend or group; text only)
+      resources :messages, only: %i[index create]
+
       # Balances (derived on demand; nothing is stored)
       get "balances/friends", to: "balances#friends"
       get "balances/groups", to: "balances#groups"
