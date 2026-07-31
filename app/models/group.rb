@@ -9,6 +9,10 @@ class Group < ApplicationRecord
            -> { where(group_members: { left_at: nil }) },
            through: :group_members,
            source: :user
+  # Polymorphic children scoped to this group. They carry no database foreign
+  # key (the columns are polymorphic), so destroying them must be driven from
+  # here to avoid orphaned rows.
+  has_many :expenses, as: :expenseable, dependent: :destroy
   has_many :settlements, as: :settleable, dependent: :destroy
   has_many :messages, as: :messageable, dependent: :destroy
   has_many :activities, dependent: :destroy

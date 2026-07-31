@@ -6,6 +6,10 @@ class Friendship < ApplicationRecord
   belongs_to :user, class_name: "User", inverse_of: :friendships
   belongs_to :friend, class_name: "User", inverse_of: :inverse_friendships
 
+  # Polymorphic children scoped to this friendship. They carry no database
+  # foreign key (the columns are polymorphic), so destroying them must be driven
+  # from here (e.g. on unfriend) to avoid orphaned rows.
+  has_many :expenses, as: :expenseable, dependent: :destroy
   has_many :settlements, as: :settleable, dependent: :destroy
   has_many :messages, as: :messageable, dependent: :destroy
 

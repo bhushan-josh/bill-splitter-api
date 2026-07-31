@@ -50,6 +50,23 @@ RSpec.describe "Api::V1::Groups", type: :request do
       ids = response.parsed_body["data"].pluck("id")
       expect(ids).to contain_exactly(mine.id)
     end
+
+    it "does not issue a per-group members_count query (no N+1)" do
+      3.times { |i| GroupService.new.create(owner: owner, attributes: { name: "G#{i}" }) }
+
+      count_queries = []
+      subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |*, payload|
+        # The per-group members_count query counts members FROM "users"; the
+        # single pagination COUNT runs FROM "groups" and is expected.
+        count_queries << payload[:sql] if payload[:sql].match?(/COUNT\(\*\)\s+FROM "users"/i)
+      end
+      get "/api/v1/groups", headers: auth_headers(owner)
+      ActiveSupport::Notifications.unsubscribe(subscriber)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["data"].pluck("members_count")).to all(eq(1))
+      expect(count_queries).to be_empty
+    end
   end
 
   describe "GET /api/v1/groups/:id" do
@@ -98,6 +115,17 @@ RSpec.describe "Api::V1::Groups", type: :request do
     it "forbids non-owners" do
       delete "/api/v1/groups/#{group.id}", headers: auth_headers(stranger), as: :json
       expect(response).to have_http_status(:forbidden)
+    end
+
+    it "cascades to the group's expenses and their splits" do
+      expense = create(:expense, expenseable: group, paid_by: owner, created_by: owner)
+      create(:expense_split, expense: expense, user: owner)
+
+      expect do
+        delete "/api/v1/groups/#{group.id}", headers: auth_headers(owner), as: :json
+      end.to change(Expense, :count).by(-1).and change(ExpenseSplit, :count).by(-1)
+
+      expect(response).to have_http_status(:ok)
     end
   end
 
