@@ -10,9 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_31_093000) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_31_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "activities", force: :cascade do |t|
+    t.bigint "group_id", null: false
+    t.bigint "actor_id", null: false
+    t.string "action", null: false
+    t.string "trackable_type"
+    t.bigint "trackable_id"
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["actor_id"], name: "index_activities_on_actor_id"
+    t.index ["group_id", "created_at"], name: "index_activities_on_group_id_and_created_at"
+    t.index ["group_id"], name: "index_activities_on_group_id"
+    t.index ["trackable_type", "trackable_id"], name: "index_activities_on_trackable"
+  end
 
   create_table "expense_splits", force: :cascade do |t|
     t.bigint "expense_id", null: false
@@ -141,6 +156,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_31_093000) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "activities", "groups"
+  add_foreign_key "activities", "users", column: "actor_id"
   add_foreign_key "expense_splits", "expenses"
   add_foreign_key "expense_splits", "users"
   add_foreign_key "expenses", "users", column: "created_by_id"

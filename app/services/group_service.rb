@@ -14,16 +14,22 @@ class GroupService
 
   # Create a group and add the owner as its first member (atomically).
   def create(owner:, attributes:)
-    ApplicationRecord.transaction do
-      group = Group.create!(attributes.merge(owner: owner))
-      group.group_members.create!(user: owner)
-      group
+    group = ApplicationRecord.transaction do
+      record = Group.create!(attributes.merge(owner: owner))
+      record.group_members.create!(user: owner)
+      record
     end
+    ActivityService.new.group_created(group)
+    group
   end
 
   def update(group:, actor:, attributes:)
     authorize_owner!(group, actor)
+    previous_name = group.name
     group.update!(attributes)
+    if group.saved_change_to_name?
+      ActivityService.new.group_renamed(group, actor: actor, from: previous_name, to: group.name)
+    end
     group
   end
 
@@ -44,6 +50,7 @@ class GroupService
     membership.left_at = nil
     membership.save!
     NotificationService.new.added_to_group(membership)
+    ActivityService.new.member_joined(group, actor: actor, member: user)
     membership
   end
 
@@ -53,6 +60,7 @@ class GroupService
     raise InvalidAction, "The owner cannot be removed; transfer ownership first" if group.owner?(user)
 
     depart!(active_membership!(group, user))
+    ActivityService.new.member_removed(group, actor: actor, member: user)
   end
 
   # A member leaves the group. The owner must transfer ownership first.
@@ -60,6 +68,7 @@ class GroupService
     raise InvalidAction, "Transfer ownership before leaving the group" if group.owner?(user)
 
     depart!(active_membership!(group, user))
+    ActivityService.new.member_removed(group, actor: user, member: user)
   end
 
   # Owner hands ownership to another active member.
