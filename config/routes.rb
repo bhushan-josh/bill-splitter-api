@@ -63,6 +63,9 @@ Rails.application.routes.draw do
           post "members", action: :add_member
           delete "members/:user_id", action: :remove_member, as: :member
         end
+
+        # GET /api/v1/groups/:group_id/activities
+        resources :activities, only: :index
       end
     end
   end
