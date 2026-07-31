@@ -69,5 +69,17 @@ RSpec.describe "Api::V1::Friends", type: :request do
       delete "/api/v1/friends/#{stranger.id}", headers: auth_headers(me), as: :json
       expect(response).to have_http_status(:not_found)
     end
+
+    it "cascades to friend expenses and their splits" do
+      friendship = Friendship.find_by(user: me, friend: friend)
+      expense = create(:expense, expenseable: friendship, paid_by: me, created_by: me)
+      create(:expense_split, expense: expense, user: me)
+
+      expect do
+        delete "/api/v1/friends/#{friend.id}", headers: auth_headers(me), as: :json
+      end.to change(Expense, :count).by(-1).and change(ExpenseSplit, :count).by(-1)
+
+      expect(response).to have_http_status(:ok)
+    end
   end
 end

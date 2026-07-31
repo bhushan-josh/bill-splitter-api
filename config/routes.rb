@@ -3,8 +3,8 @@
 require "sidekiq/web"
 
 Rails.application.routes.draw do
-  # Sidekiq dashboard. Lock this down (authentication) before exposing it in
-  # production.
+  # Sidekiq dashboard. Protected by HTTP Basic auth configured in
+  # config/initializers/sidekiq_web.rb (credentials from the environment).
   mount Sidekiq::Web => "/sidekiq"
 
   # Rails' built-in liveness check: returns 200 if the app boots cleanly.
