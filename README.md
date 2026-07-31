@@ -132,6 +132,9 @@ curl http://localhost:3000/api/v1/me \
 
 ## API reference
 
+Full endpoint documentation — parameters, requirements and response shapes for
+every route — lives in **[docs/API.md](docs/API.md)**. Quick index below.
+
 All routes are prefixed with `/api/v1`. Everything except `health`, `signup`
 and `login` requires a Bearer token.
 
