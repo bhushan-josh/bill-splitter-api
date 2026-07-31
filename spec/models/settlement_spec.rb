@@ -32,4 +32,10 @@ RSpec.describe Settlement, type: :model do
     expect(settlement).not_to be_valid
     expect(settlement.errors[:to_user]).to include("must be different from the payer")
   end
+
+  it "rejects an over-long note" do
+    settlement.note = "x" * 2001
+    expect(settlement).not_to be_valid
+    expect(settlement.errors[:note]).to be_present
+  end
 end

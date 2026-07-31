@@ -34,6 +34,12 @@ Rails.application.routes.draw do
       # Friends
       resources :friends, only: %i[index destroy], controller: "friendships"
 
+      # Expenses
+      resources :expenses, only: %i[show create update destroy]
+
+      # Settlements (payments that pay down debt; change balances immediately)
+      resources :settlements, only: %i[create update destroy]
+
       # Balances (derived on demand; nothing is stored)
       get "balances/friends", to: "balances#friends"
       get "balances/groups", to: "balances#groups"

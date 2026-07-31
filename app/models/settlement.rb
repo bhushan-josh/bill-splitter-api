@@ -10,6 +10,7 @@ class Settlement < ApplicationRecord
   belongs_to :created_by, class_name: "User"
 
   validates :amount, numericality: { greater_than: 0 }
+  validates :note, length: { maximum: 2000 }, allow_blank: true
   validate :distinct_parties
 
   private
