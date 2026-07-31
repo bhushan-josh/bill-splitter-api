@@ -21,22 +21,15 @@ class ExpenseService
   def create(creator:, params:)
     expenseable = resolve_context!(creator, params)
 
-    ApplicationRecord.transaction do
-      expense = Expense.new(
-        expenseable: expenseable,
-        created_by: creator,
-        paid_by: resolve_payer!(expenseable, creator, params),
-        title: params[:title],
-        description: params[:description],
-        currency: params[:currency].presence || "USD",
-        amount: to_amount(params[:amount]),
-        split_type: params[:split_type],
-        expense_date: params[:expense_date]
-      )
-      apply_splits!(expense, expenseable, participant_entries(params))
-      expense.save!
-      expense
+    expense = ApplicationRecord.transaction do
+      record = Expense.new(expense_attributes(creator, expenseable, params))
+      apply_splits!(record, expenseable, participant_entries(params))
+      record.save!
+      record
     end
+
+    NotificationService.new.expense_created(expense)
+    expense
   end
 
   def update(expense:, actor:, params:)
@@ -68,6 +61,20 @@ class ExpenseService
   end
 
   private
+
+  def expense_attributes(creator, expenseable, params)
+    {
+      expenseable: expenseable,
+      created_by: creator,
+      paid_by: resolve_payer!(expenseable, creator, params),
+      title: params[:title],
+      description: params[:description],
+      currency: params[:currency].presence || "USD",
+      amount: to_amount(params[:amount]),
+      split_type: params[:split_type],
+      expense_date: params[:expense_date]
+    }
+  end
 
   # --- Context & authorization ---------------------------------------------
 
