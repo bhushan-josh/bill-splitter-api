@@ -2,14 +2,14 @@
 
 FactoryBot.define do
   factory :expense do
-    association :expenseable, factory: :group
+    association :paid_by, factory: :user
+    created_by { paid_by }
     title { "Dinner" }
-    description { "Team dinner" }
     amount { "60.00" }
     currency { "USD" }
     split_type { "equal" }
-    expense_date { Date.new(2026, 7, 30) }
-    paid_by { expenseable.try(:owner) || association(:user) }
-    created_by { expenseable.try(:owner) || association(:user) }
+    expense_date { Date.current }
+
+    # expenseable (a Group or Friendship) must be supplied by the caller.
   end
 end

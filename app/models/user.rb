@@ -33,11 +33,17 @@ class User < ApplicationRecord
            through: :group_memberships,
            source: :group
 
-  has_many :paid_expenses, class_name: "Expense", foreign_key: :paid_by_id, inverse_of: :paid_by,
-                           dependent: :restrict_with_exception
-  has_many :created_expenses, class_name: "Expense", foreign_key: :created_by_id, inverse_of: :created_by,
-                              dependent: :restrict_with_exception
+  # Expenses and settlements the user is involved in. Balances are derived from
+  # these rows (see BalanceCalculator); nothing is precomputed.
+  has_many :paid_expenses,
+           class_name: "Expense", foreign_key: :paid_by_id, inverse_of: :paid_by, dependent: :destroy
+  has_many :created_expenses,
+           class_name: "Expense", foreign_key: :created_by_id, inverse_of: :created_by, dependent: :destroy
   has_many :expense_splits, inverse_of: :user, dependent: :destroy
+  has_many :settlements_made,
+           class_name: "Settlement", foreign_key: :from_user_id, inverse_of: :from_user, dependent: :destroy
+  has_many :settlements_received,
+           class_name: "Settlement", foreign_key: :to_user_id, inverse_of: :to_user, dependent: :destroy
 
   PHONE_FORMAT = /\A\+?[0-9]{7,15}\z/
   USERNAME_FORMAT = /\A[a-zA-Z0-9_]{3,30}\z/
