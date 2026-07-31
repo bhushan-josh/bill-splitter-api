@@ -10,7 +10,10 @@ module Api
 
       # GET /api/v1/groups  — groups the current user is an active member of
       def index
-        pagy, groups = pagy(current_user.groups.includes(:owner).order(created_at: :desc))
+        # Eager-load owner and members so GroupSerializer's `members_count`
+        # (members.size) never fires a per-group COUNT query.
+        scope = current_user.groups.includes(:owner, :members).order(created_at: :desc)
+        pagy, groups = pagy(scope)
         render_collection(pagy, GroupSerializer.collection(groups))
       end
 
