@@ -34,6 +34,11 @@ Rails.application.routes.draw do
       # Friends
       resources :friends, only: %i[index destroy], controller: "friendships"
 
+      # Balances (derived on demand; nothing is stored)
+      get "balances/friends", to: "balances#friends"
+      get "balances/groups", to: "balances#groups"
+      get "balances/overall", to: "balances#overall"
+
       # Groups
       resources :groups do
         member do

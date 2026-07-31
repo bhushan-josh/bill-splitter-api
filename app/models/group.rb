@@ -9,6 +9,7 @@ class Group < ApplicationRecord
            -> { where(group_members: { left_at: nil }) },
            through: :group_members,
            source: :user
+  has_many :settlements, as: :settleable, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 150 }
   validates :description, length: { maximum: 2000 }, allow_blank: true
