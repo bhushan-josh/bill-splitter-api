@@ -23,7 +23,7 @@ gem "tzinfo-data", platforms: %i[windows jruby]
 # Sidekiq background job processor (backed by Redis)
 gem "sidekiq", "~> 7.3"
 # Redis client (shared cache / Sidekiq backend)
-gem "redis", "~> 5.3"
+gem "redis", "~> 6.0"
 
 # --- API & auth ------------------------------------------------------------
 # JSON Web Token encoding/decoding (authentication implemented later)
