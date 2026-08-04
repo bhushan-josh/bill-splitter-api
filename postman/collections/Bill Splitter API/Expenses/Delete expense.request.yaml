@@ -1,0 +1,5 @@
+$kind: http-request
+description: Creator only.
+url: "{{baseUrl}}/api/v1/expenses/{{expenseId}}"
+method: DELETE
+order: 4000

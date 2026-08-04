@@ -1,0 +1,13 @@
+$kind: http-request
+description: Owner only; the new owner must be an active member.
+url: "{{baseUrl}}/api/v1/groups/{{groupId}}/transfer_owner"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "new_owner_id": {{newOwnerId}}
+    }
+order: 7000

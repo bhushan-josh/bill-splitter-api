@@ -1,0 +1,5 @@
+$kind: http-request
+description: Aggregate position across friends and groups.
+url: "{{baseUrl}}/api/v1/balances/overall"
+method: GET
+order: 3000

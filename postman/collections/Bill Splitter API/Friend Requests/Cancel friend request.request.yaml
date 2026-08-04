@@ -1,0 +1,5 @@
+$kind: http-request
+description: Sender cancels their own pending request.
+url: "{{baseUrl}}/api/v1/friend_requests/{{friendRequestId}}"
+method: DELETE
+order: 4000

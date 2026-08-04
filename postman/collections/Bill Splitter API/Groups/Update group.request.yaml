@@ -1,0 +1,14 @@
+$kind: http-request
+description: Owner only.
+url: "{{baseUrl}}/api/v1/groups/{{groupId}}"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "name": "Trip to Goa (2026)",
+      "description": "Updated"
+    }
+order: 4000

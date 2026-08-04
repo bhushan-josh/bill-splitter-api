@@ -1,0 +1,10 @@
+$kind: http-request
+description: List the current user's friend requests (both directions). Each item is tagged with `direction` (incoming/outgoing).
+url: "{{baseUrl}}/api/v1/friend_requests?direction=all&status=pending&page=1&limit=25"
+method: GET
+queryParams:
+  direction: all
+  status: pending
+  page: "1"
+  limit: "25"
+order: 500

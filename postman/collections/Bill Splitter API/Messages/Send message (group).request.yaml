@@ -1,0 +1,15 @@
+$kind: http-request
+description: For a friend chat use context_type=friend & friend_id.
+url: "{{baseUrl}}/api/v1/messages"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "context_type": "group",
+      "group_id": {{groupId}},
+      "body": "Hello team!"
+    }
+order: 2000

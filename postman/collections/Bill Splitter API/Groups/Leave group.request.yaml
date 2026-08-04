@@ -1,0 +1,5 @@
+$kind: http-request
+description: The current user leaves. The owner must transfer ownership first.
+url: "{{baseUrl}}/api/v1/groups/{{groupId}}/leave"
+method: POST
+order: 8000

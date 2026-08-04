@@ -1,0 +1,5 @@
+$kind: http-request
+description: Receiver accepts (creates the mutual friendship).
+url: "{{baseUrl}}/api/v1/friend_requests/{{friendRequestId}}/accept"
+method: PATCH
+order: 2000

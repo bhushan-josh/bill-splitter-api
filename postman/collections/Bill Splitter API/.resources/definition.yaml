@@ -1,0 +1,30 @@
+$kind: collection
+description: |-
+  Complete Bill Splitter API collection (all endpoints).
+
+  Quick start:
+  1. Set the `baseUrl` collection variable (default http://localhost:3000).
+  2. Run **Auth > Signup** (or Login). The test script saves the JWT into the `token` variable, which every other request uses automatically via Bearer auth.
+  3. Create a second user (Signup again after clearing token, or set `receiverId`) to exercise friends/expenses/settlements.
+
+  Requests that create a resource save its id into a collection variable (e.g. `groupId`, `expenseId`) so later requests can reuse it. Edit the JSON bodies and `*_id` variables to match your data.
+variables:
+  baseUrl: http://localhost:3000
+  token: ""
+  userId: ""
+  receiverId: ""
+  friendRequestId: ""
+  friendId: ""
+  groupId: ""
+  newOwnerId: ""
+  expenseId: ""
+  settlementId: ""
+  fromUserId: ""
+  toUserId: ""
+  notificationId: ""
+auth:
+  - id: a278b712-afd4-4e05-93e1-44444cb93285
+    type: bearer
+    name: bearer auth
+    credentials:
+      token: "{{token}}"

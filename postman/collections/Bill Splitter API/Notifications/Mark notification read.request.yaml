@@ -1,0 +1,5 @@
+$kind: http-request
+description: Idempotent; keeps the original read timestamp if already read.
+url: "{{baseUrl}}/api/v1/notifications/{{notificationId}}/read"
+method: PATCH
+order: 2000

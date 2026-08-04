@@ -1,0 +1,11 @@
+# Use this workspace to collaborate
+workspace:
+  id: 5f64c3c4-6d03-4b10-8770-c286b0fd7ad1
+
+localResources:
+  collections:
+    - ../docs/BillSplitter.postman_collection.json
+
+cloudResources:
+  collections:
+    ../postman/collections/Bill Splitter API: 46d69758-cf47-4b2e-b6be-584f73e5eadc

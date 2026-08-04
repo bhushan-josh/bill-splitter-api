@@ -1,0 +1,5 @@
+$kind: http-request
+description: Remove a friend. `friendId` is the friend's user id. Cascades their friend expenses/settlements/messages.
+url: "{{baseUrl}}/api/v1/friends/{{friendId}}"
+method: DELETE
+order: 2000

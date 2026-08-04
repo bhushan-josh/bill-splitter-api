@@ -1,0 +1,5 @@
+$kind: http-request
+description: Owner only. Cascades expenses/splits/settlements/messages/activity.
+url: "{{baseUrl}}/api/v1/groups/{{groupId}}"
+method: DELETE
+order: 9000

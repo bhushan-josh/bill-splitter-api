@@ -1,0 +1,14 @@
+$kind: http-request
+description: Current user's notifications, newest first. Saves the first id into `notificationId`.
+url: "{{baseUrl}}/api/v1/notifications?page=1&limit=25"
+method: GET
+queryParams:
+  page: "1"
+  limit: "25"
+scripts:
+  - type: afterResponse
+    code: |-
+      const res = pm.response.json();
+      if (res.success && res.data.length) { pm.collectionVariables.set('notificationId', res.data[0].id); }
+    language: text/javascript
+order: 1000

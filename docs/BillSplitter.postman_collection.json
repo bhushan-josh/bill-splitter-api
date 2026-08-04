@@ -1,0 +1,732 @@
+{
+  "info": {
+    "_postman_id": "b1115p11-7e12-4a10-9f00-b111c0ffee01",
+    "name": "Bill Splitter API",
+    "description": "Complete Bill Splitter API collection (all endpoints).\n\nQuick start:\n1. Set the `baseUrl` collection variable (default http://localhost:3000).\n2. Run **Auth > Signup** (or Login). The test script saves the JWT into the `token` variable, which every other request uses automatically via Bearer auth.\n3. Create a second user (Signup again after clearing token, or set `receiverId`) to exercise friends/expenses/settlements.\n\nRequests that create a resource save its id into a collection variable (e.g. `groupId`, `expenseId`) so later requests can reuse it. Edit the JSON bodies and `*_id` variables to match your data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "receiverId", "value": "" },
+    { "key": "friendRequestId", "value": "" },
+    { "key": "friendId", "value": "" },
+    { "key": "groupId", "value": "" },
+    { "key": "newOwnerId", "value": "" },
+    { "key": "expenseId", "value": "" },
+    { "key": "settlementId", "value": "" },
+    { "key": "fromUserId", "value": "" },
+    { "key": "toUserId", "value": "" },
+    { "key": "notificationId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "health"]
+            },
+            "description": "Public liveness/readiness check (DB + Redis)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) {",
+                  "  pm.collectionVariables.set('token', res.data.token);",
+                  "  pm.collectionVariables.set('userId', res.data.user.id);",
+                  "  console.log('Saved token for user', res.data.user.username);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ada Lovelace\",\n  \"username\": \"user{{$timestamp}}\",\n  \"phone\": \"+1{{$timestamp}}\",\n  \"password\": \"secret1\",\n  \"password_confirmation\": \"secret1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "signup"]
+            },
+            "description": "Create an account and receive a JWT. Username/phone use dynamic values so it is re-runnable."
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) {",
+                  "  pm.collectionVariables.set('token', res.data.token);",
+                  "  pm.collectionVariables.set('userId', res.data.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"ada\",\n  \"password\": \"secret1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "login"]
+            },
+            "description": "Exchange username-or-phone + password for a JWT."
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "me"]
+            },
+            "description": "Current authenticated user's profile."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Search users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/search?q=user&page=1&limit=25",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "search"],
+              "query": [
+                { "key": "q", "value": "user" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "25" }
+              ]
+            },
+            "description": "Search users by username or phone (excludes yourself)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Friend Requests",
+      "item": [
+        {
+          "name": "List friend requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/friend_requests?direction=all&status=pending&page=1&limit=25",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "friend_requests"],
+              "query": [
+                { "key": "direction", "value": "all", "description": "incoming | outgoing | all (default all)" },
+                { "key": "status", "value": "pending", "description": "pending | accepted | rejected | cancelled | all (default pending)" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "25" }
+              ]
+            },
+            "description": "List the current user's friend requests (both directions). Each item is tagged with `direction` (incoming/outgoing)."
+          }
+        },
+        {
+          "name": "Send friend request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) { pm.collectionVariables.set('friendRequestId', res.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receiver_id\": {{receiverId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/friend_requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "friend_requests"]
+            },
+            "description": "Send a request. Set `receiverId` to another user's id."
+          }
+        },
+        {
+          "name": "Accept friend request",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/friend_requests/{{friendRequestId}}/accept",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "friend_requests", "{{friendRequestId}}", "accept"]
+            },
+            "description": "Receiver accepts (creates the mutual friendship)."
+          }
+        },
+        {
+          "name": "Reject friend request",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/friend_requests/{{friendRequestId}}/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "friend_requests", "{{friendRequestId}}", "reject"]
+            },
+            "description": "Receiver rejects a pending request."
+          }
+        },
+        {
+          "name": "Cancel friend request",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/friend_requests/{{friendRequestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "friend_requests", "{{friendRequestId}}"]
+            },
+            "description": "Sender cancels their own pending request."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Friends",
+      "item": [
+        {
+          "name": "List friends",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/friends?page=1&limit=25",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "friends"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "25" }
+              ]
+            },
+            "description": "Current user's friends, newest first."
+          }
+        },
+        {
+          "name": "Unfriend",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/friends/{{friendId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "friends", "{{friendId}}"]
+            },
+            "description": "Remove a friend. `friendId` is the friend's user id. Cascades their friend expenses/settlements/messages."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Expenses",
+      "item": [
+        {
+          "name": "Create expense (group, equal)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) { pm.collectionVariables.set('expenseId', res.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context_type\": \"group\",\n  \"group_id\": {{groupId}},\n  \"title\": \"Dinner\",\n  \"description\": \"Team dinner\",\n  \"amount\": 60.00,\n  \"currency\": \"USD\",\n  \"paid_by_id\": {{userId}},\n  \"split_type\": \"equal\",\n  \"expense_date\": \"2026-07-31\",\n  \"participants\": [\n    { \"user_id\": {{userId}} },\n    { \"user_id\": {{friendId}} }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expenses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "expenses"]
+            },
+            "description": "Equal split. For `percentage` add `percentage` to each participant (sum 100); for `exact` add `amount` to each (sum to total). For a friend expense use context_type=friend + friend_id."
+          }
+        },
+        {
+          "name": "Get expense",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expenses/{{expenseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "expenses", "{{expenseId}}"]
+            },
+            "description": "Fetch an expense (must be a member of its context)."
+          }
+        },
+        {
+          "name": "Update expense",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Dinner (updated)\",\n  \"amount\": 80.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expenses/{{expenseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "expenses", "{{expenseId}}"]
+            },
+            "description": "Creator only. Sending amount/split_type/participants rebuilds the splits."
+          }
+        },
+        {
+          "name": "Delete expense",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expenses/{{expenseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "expenses", "{{expenseId}}"]
+            },
+            "description": "Creator only."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Settlements",
+      "item": [
+        {
+          "name": "Create settlement",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) { pm.collectionVariables.set('settlementId', res.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context_type\": \"group\",\n  \"group_id\": {{groupId}},\n  \"from_user_id\": {{friendId}},\n  \"to_user_id\": {{userId}},\n  \"amount\": 25.00,\n  \"note\": \"cash\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/settlements",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "settlements"]
+            },
+            "description": "A payment from_user -> to_user. Both must belong to the context and be distinct. For a friend settlement use context_type=friend + friend_id."
+          }
+        },
+        {
+          "name": "Update settlement",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 30.00,\n  \"note\": \"updated note\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/settlements/{{settlementId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "settlements", "{{settlementId}}"]
+            },
+            "description": "Creator only."
+          }
+        },
+        {
+          "name": "Delete settlement",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/settlements/{{settlementId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "settlements", "{{settlementId}}"]
+            },
+            "description": "Creator only."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Balances",
+      "item": [
+        {
+          "name": "Friend balances",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/balances/friends",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "balances", "friends"]
+            },
+            "description": "Per-friend balances + summary."
+          }
+        },
+        {
+          "name": "Group balances",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/balances/groups",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "balances", "groups"]
+            },
+            "description": "Per-group balances (with member breakdown) + summary."
+          }
+        },
+        {
+          "name": "Overall balance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/balances/overall",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "balances", "overall"]
+            },
+            "description": "Aggregate position across friends and groups."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "List messages (group)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/messages?context_type=group&group_id={{groupId}}&page=1&limit=25",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "messages"],
+              "query": [
+                { "key": "context_type", "value": "group" },
+                { "key": "group_id", "value": "{{groupId}}" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "25" }
+              ]
+            },
+            "description": "Newest first. For a friend chat use context_type=friend & friend_id."
+          }
+        },
+        {
+          "name": "Send message (group)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context_type\": \"group\",\n  \"group_id\": {{groupId}},\n  \"body\": \"Hello team!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/messages",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "messages"]
+            },
+            "description": "For a friend chat use context_type=friend & friend_id."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "List notifications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data.length) { pm.collectionVariables.set('notificationId', res.data[0].id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications?page=1&limit=25",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notifications"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "25" }
+              ]
+            },
+            "description": "Current user's notifications, newest first. Saves the first id into `notificationId`."
+          }
+        },
+        {
+          "name": "Mark notification read",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/{{notificationId}}/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notifications", "{{notificationId}}", "read"]
+            },
+            "description": "Idempotent; keeps the original read timestamp if already read."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Groups",
+      "item": [
+        {
+          "name": "List groups",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/groups?page=1&limit=25",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "groups"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "25" }
+              ]
+            },
+            "description": "Groups you are an active member of."
+          }
+        },
+        {
+          "name": "Create group",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) { pm.collectionVariables.set('groupId', res.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Trip to Goa\",\n  \"description\": \"Weekend trip\",\n  \"image_url\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/groups",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "groups"]
+            },
+            "description": "Creator becomes owner + first member. Saves `groupId`."
+          }
+        },
+        {
+          "name": "Get group",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/groups/{{groupId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "groups", "{{groupId}}"]
+            },
+            "description": "Members only. Includes the member list."
+          }
+        },
+        {
+          "name": "Update group",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Trip to Goa (2026)\",\n  \"description\": \"Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/groups/{{groupId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "groups", "{{groupId}}"]
+            },
+            "description": "Owner only."
+          }
+        },
+        {
+          "name": "Add member",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": {{friendId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/groups/{{groupId}}/members",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "groups", "{{groupId}}", "members"]
+            },
+            "description": "Owner only; the user must be one of your friends."
+          }
+        },
+        {
+          "name": "Remove member",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/groups/{{groupId}}/members/{{friendId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "groups", "{{groupId}}", "members", "{{friendId}}"]
+            },
+            "description": "Owner only (soft-leave). The owner cannot be removed this way."
+          }
+        },
+        {
+          "name": "Transfer ownership",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"new_owner_id\": {{newOwnerId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/groups/{{groupId}}/transfer_owner",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "groups", "{{groupId}}", "transfer_owner"]
+            },
+            "description": "Owner only; the new owner must be an active member."
+          }
+        },
+        {
+          "name": "Leave group",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/groups/{{groupId}}/leave",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "groups", "{{groupId}}", "leave"]
+            },
+            "description": "The current user leaves. The owner must transfer ownership first."
+          }
+        },
+        {
+          "name": "Delete group",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/groups/{{groupId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "groups", "{{groupId}}"]
+            },
+            "description": "Owner only. Cascades expenses/splits/settlements/messages/activity."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Activities",
+      "item": [
+        {
+          "name": "List group activities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/groups/{{groupId}}/activities?page=1&limit=25",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "groups", "{{groupId}}", "activities"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "25" }
+              ]
+            },
+            "description": "Group activity timeline, newest first (members only)."
+          }
+        }
+      ]
+    }
+  ]
+}

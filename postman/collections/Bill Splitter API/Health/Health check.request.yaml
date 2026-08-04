@@ -1,0 +1,7 @@
+$kind: http-request
+description: Public liveness/readiness check (DB + Redis).
+url: "{{baseUrl}}/api/v1/health"
+method: GET
+auth:
+  type: noauth
+order: 1000

@@ -29,8 +29,8 @@ underlying records.
 
 - **Auth** — signup / login issuing JWTs; every other endpoint requires a valid
   `Authorization: Bearer <token>` header.
-- **Friends** — friend requests (send / accept / reject / cancel) and mutual
-  friendships (stored as two directed rows, always created/removed atomically).
+- **Friends** — friend requests (send / list / accept / reject / cancel) and
+  mutual friendships (stored as two directed rows, created/removed atomically).
 - **Groups** — create, rename, delete; owner-only membership management
   (add friends, remove members, soft-leave) and ownership transfer; per-group
   activity timeline.
@@ -133,7 +133,9 @@ curl http://localhost:3000/api/v1/me \
 ## API reference
 
 Full endpoint documentation — parameters, requirements and response shapes for
-every route — lives in **[docs/API.md](docs/API.md)**. Quick index below.
+every route — lives in **[docs/API.md](docs/API.md)**. A ready-to-import
+**[Postman collection](docs/BillSplitter.postman_collection.json)** covers every
+endpoint (auto-captures the JWT and resource ids). Quick index below.
 
 All routes are prefixed with `/api/v1`. Everything except `health`, `signup`
 and `login` requires a Bearer token.
@@ -144,6 +146,7 @@ and `login` requires a Bearer token.
 | `POST /signup` · `POST /login`                 | Create account / obtain a JWT           |
 | `GET  /me`                                      | Current user's profile                  |
 | `GET  /users/search?q=`                         | Search users by username or phone       |
+| `GET  /friend_requests`                         | List requests (incoming / outgoing)     |
 | `POST /friend_requests`                         | Send a friend request                   |
 | `PATCH /friend_requests/:id/accept` · `/reject` | Receiver accepts / rejects              |
 | `DELETE /friend_requests/:id`                   | Sender cancels                          |
@@ -230,5 +233,5 @@ bundle exec rspec       # request, model & service specs
 bundle exec rubocop     # style / lint
 ```
 
-The suite covers request, model and service layers (**256 examples**), including
+The suite covers request, model and service layers (**262 examples**), including
 N+1 guards and polymorphic cascade behavior. RuboCop runs clean.

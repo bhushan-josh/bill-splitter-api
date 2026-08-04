@@ -1,0 +1,9 @@
+$kind: http-request
+description: Search users by username or phone (excludes yourself).
+url: "{{baseUrl}}/api/v1/users/search?q=user&page=1&limit=25"
+method: GET
+queryParams:
+  q: user
+  page: "1"
+  limit: "25"
+order: 1000

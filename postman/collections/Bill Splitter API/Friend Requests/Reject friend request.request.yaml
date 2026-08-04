@@ -1,0 +1,5 @@
+$kind: http-request
+description: Receiver rejects a pending request.
+url: "{{baseUrl}}/api/v1/friend_requests/{{friendRequestId}}/reject"
+method: PATCH
+order: 3000

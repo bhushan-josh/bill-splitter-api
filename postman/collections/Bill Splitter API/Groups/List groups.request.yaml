@@ -1,0 +1,8 @@
+$kind: http-request
+description: Groups you are an active member of.
+url: "{{baseUrl}}/api/v1/groups?page=1&limit=25"
+method: GET
+queryParams:
+  page: "1"
+  limit: "25"
+order: 1000

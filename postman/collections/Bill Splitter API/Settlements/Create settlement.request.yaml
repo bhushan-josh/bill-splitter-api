@@ -1,0 +1,24 @@
+$kind: http-request
+description: A payment from_user -> to_user. Both must belong to the context and be distinct. For a friend settlement use context_type=friend + friend_id.
+url: "{{baseUrl}}/api/v1/settlements"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "context_type": "group",
+      "group_id": {{groupId}},
+      "from_user_id": {{friendId}},
+      "to_user_id": {{userId}},
+      "amount": 25.00,
+      "note": "cash"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const res = pm.response.json();
+      if (res.success) { pm.collectionVariables.set('settlementId', res.data.id); }
+    language: text/javascript
+order: 1000

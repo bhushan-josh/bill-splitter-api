@@ -6,6 +6,62 @@ RSpec.describe "Api::V1::FriendRequests", type: :request do
   let(:sender) { create(:user) }
   let(:receiver) { create(:user) }
 
+  describe "GET /api/v1/friend_requests" do
+    let(:other) { create(:user) }
+
+    it "requires authentication" do
+      get "/api/v1/friend_requests"
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "returns incoming and outgoing pending requests by default, tagged with direction" do
+      incoming = create(:friend_request, sender: other, receiver: receiver)
+      outgoing = create(:friend_request, sender: receiver, receiver: sender)
+
+      get "/api/v1/friend_requests", headers: auth_headers(receiver)
+
+      expect(response).to have_http_status(:ok)
+      data = response.parsed_body["data"]
+      by_id = data.index_by { |fr| fr["id"] }
+      expect(by_id.keys).to contain_exactly(incoming.id, outgoing.id)
+      expect(by_id[incoming.id]["direction"]).to eq("incoming")
+      expect(by_id[outgoing.id]["direction"]).to eq("outgoing")
+      expect(response.parsed_body.dig("meta", "pagination", "count")).to eq(2)
+    end
+
+    it "filters to incoming only" do
+      incoming = create(:friend_request, sender: other, receiver: receiver)
+      create(:friend_request, sender: receiver, receiver: sender)
+
+      get "/api/v1/friend_requests", params: { direction: "incoming" }, headers: auth_headers(receiver)
+
+      ids = response.parsed_body["data"].pluck("id")
+      expect(ids).to contain_exactly(incoming.id)
+    end
+
+    it "excludes non-pending requests by default but includes them with status=all" do
+      create(:friend_request, sender: other, receiver: receiver, status: "rejected")
+
+      get "/api/v1/friend_requests", headers: auth_headers(receiver)
+      expect(response.parsed_body["data"]).to be_empty
+
+      get "/api/v1/friend_requests", params: { status: "all" }, headers: auth_headers(receiver)
+      expect(response.parsed_body["data"].size).to eq(1)
+    end
+
+    it "does not leak other users' requests" do
+      create(:friend_request, sender: sender, receiver: other)
+      get "/api/v1/friend_requests", headers: auth_headers(receiver)
+      expect(response.parsed_body["data"]).to be_empty
+    end
+
+    it "rejects an invalid direction with 400" do
+      get "/api/v1/friend_requests", params: { direction: "sideways" }, headers: auth_headers(receiver)
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body.dig("error", "code")).to eq("invalid_parameter")
+    end
+  end
+
   describe "POST /api/v1/friend_requests" do
     it "requires authentication" do
       post "/api/v1/friend_requests", params: { receiver_id: receiver.id }, as: :json

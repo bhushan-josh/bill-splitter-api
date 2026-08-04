@@ -1,0 +1,14 @@
+$kind: http-request
+description: Creator only.
+url: "{{baseUrl}}/api/v1/settlements/{{settlementId}}"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "amount": 30.00,
+      "note": "updated note"
+    }
+order: 2000

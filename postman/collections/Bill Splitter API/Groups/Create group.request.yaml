@@ -1,0 +1,21 @@
+$kind: http-request
+description: Creator becomes owner + first member. Saves `groupId`.
+url: "{{baseUrl}}/api/v1/groups"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "name": "Trip to Goa",
+      "description": "Weekend trip",
+      "image_url": null
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const res = pm.response.json();
+      if (res.success) { pm.collectionVariables.set('groupId', res.data.id); }
+    language: text/javascript
+order: 2000

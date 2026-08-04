@@ -1,0 +1,25 @@
+$kind: http-request
+description: Exchange username-or-phone + password for a JWT.
+url: "{{baseUrl}}/api/v1/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "login": "ada",
+      "password": "secret1"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      const res = pm.response.json();
+      if (res.success) {
+        pm.collectionVariables.set('token', res.data.token);
+        pm.collectionVariables.set('userId', res.data.user.id);
+      }
+    language: text/javascript
+order: 2000

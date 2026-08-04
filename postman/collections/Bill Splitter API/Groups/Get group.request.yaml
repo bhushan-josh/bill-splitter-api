@@ -1,0 +1,5 @@
+$kind: http-request
+description: Members only. Includes the member list.
+url: "{{baseUrl}}/api/v1/groups/{{groupId}}"
+method: GET
+order: 3000

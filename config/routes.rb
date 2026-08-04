@@ -24,7 +24,7 @@ Rails.application.routes.draw do
       get "users/search", to: "users#search"
 
       # Friend requests
-      resources :friend_requests, only: %i[create destroy] do
+      resources :friend_requests, only: %i[index create destroy] do
         member do
           patch :accept
           patch :reject

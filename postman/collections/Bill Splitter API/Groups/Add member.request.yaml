@@ -1,0 +1,13 @@
+$kind: http-request
+description: Owner only; the user must be one of your friends.
+url: "{{baseUrl}}/api/v1/groups/{{groupId}}/members"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "user_id": {{friendId}}
+    }
+order: 5000

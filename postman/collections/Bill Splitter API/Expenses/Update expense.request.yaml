@@ -1,0 +1,14 @@
+$kind: http-request
+description: Creator only. Sending amount/split_type/participants rebuilds the splits.
+url: "{{baseUrl}}/api/v1/expenses/{{expenseId}}"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "title": "Dinner (updated)",
+      "amount": 80.00
+    }
+order: 3000

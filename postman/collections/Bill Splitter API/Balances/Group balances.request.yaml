@@ -1,0 +1,5 @@
+$kind: http-request
+description: Per-group balances (with member breakdown) + summary.
+url: "{{baseUrl}}/api/v1/balances/groups"
+method: GET
+order: 2000

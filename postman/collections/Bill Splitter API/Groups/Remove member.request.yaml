@@ -1,0 +1,5 @@
+$kind: http-request
+description: Owner only (soft-leave). The owner cannot be removed this way.
+url: "{{baseUrl}}/api/v1/groups/{{groupId}}/members/{{friendId}}"
+method: DELETE
+order: 6000

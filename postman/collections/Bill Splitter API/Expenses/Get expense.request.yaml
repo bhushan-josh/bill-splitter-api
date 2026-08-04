@@ -1,0 +1,5 @@
+$kind: http-request
+description: Fetch an expense (must be a member of its context).
+url: "{{baseUrl}}/api/v1/expenses/{{expenseId}}"
+method: GET
+order: 2000

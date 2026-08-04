@@ -1,0 +1,31 @@
+$kind: http-request
+description: Equal split. For `percentage` add `percentage` to each participant (sum 100); for `exact` add `amount` to each (sum to total). For a friend expense use context_type=friend + friend_id.
+url: "{{baseUrl}}/api/v1/expenses"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "context_type": "group",
+      "group_id": {{groupId}},
+      "title": "Dinner",
+      "description": "Team dinner",
+      "amount": 60.00,
+      "currency": "USD",
+      "paid_by_id": {{userId}},
+      "split_type": "equal",
+      "expense_date": "2026-07-31",
+      "participants": [
+        { "user_id": {{userId}} },
+        { "user_id": {{friendId}} }
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const res = pm.response.json();
+      if (res.success) { pm.collectionVariables.set('expenseId', res.data.id); }
+    language: text/javascript
+order: 1000

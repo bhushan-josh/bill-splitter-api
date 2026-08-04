@@ -1,0 +1,8 @@
+$kind: http-request
+description: Group activity timeline, newest first (members only).
+url: "{{baseUrl}}/api/v1/groups/{{groupId}}/activities?page=1&limit=25"
+method: GET
+queryParams:
+  page: "1"
+  limit: "25"
+order: 1000

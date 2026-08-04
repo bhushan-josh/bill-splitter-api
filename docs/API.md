@@ -204,6 +204,27 @@ friendship.
 { "id": 5, "status": "pending", "sender": { …User }, "receiver": { …User }, "created_at": "…", "updated_at": "…" }
 ```
 
+The **list** endpoint additionally tags each item with a `direction`
+(`"incoming"` or `"outgoing"`) relative to the current user.
+
+### `GET /api/v1/friend_requests`
+
+List the current user's friend requests (both directions), newest first.
+Paginated.
+
+**Query:**
+
+| Param       | Required | Default   | Notes                                                             |
+| ----------- | -------- | --------- | ----------------------------------------------------------------- |
+| `direction` | no       | `all`     | `incoming` \| `outgoing` \| `all`                                 |
+| `status`    | no       | `pending` | `pending` \| `accepted` \| `rejected` \| `cancelled` \| `all`     |
+| `page`, `limit` | no   |           | pagination                                                        |
+
+**Response `200`:** array of FriendRequest objects (each with `direction`) +
+`meta.pagination`.
+
+**Errors:** `400 invalid_parameter` for an unknown `direction` or `status`.
+
 ### `POST /api/v1/friend_requests`
 
 Send a request from the current user.
