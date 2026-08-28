@@ -53,7 +53,7 @@ group :development, :test do
   gem "faker", "~> 3.5"
 
   # Ruby style / lint
-  gem "rubocop", "~> 1.71", require: false
+  gem "rubocop", "~> 1.90", require: false
   gem "rubocop-performance", require: false
   gem "rubocop-rails", require: false
   gem "rubocop-rspec", require: false
