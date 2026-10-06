@@ -8,7 +8,7 @@ ruby "3.2.0"
 gem "rails", "7.2.2.1"
 
 # PostgreSQL database adapter
-gem "pg", "~> 1.5"
+gem "pg", "~> 1.7"
 
 # Puma web server
 gem "puma", ">= 5.0"
